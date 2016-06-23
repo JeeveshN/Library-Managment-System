@@ -2,7 +2,7 @@
 <title>
   Library Managment-Sign Up
 </title>
-<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="style-sign-up.css") }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="css/style-sign-up.css") }}">
 <body>
   <div class="body"></div>
 		<div class="grad"></div>
@@ -17,13 +17,13 @@
       <form action="{{ url_for('signed_up') }}" id="sign-up" method="post">
 				<input type="text" placeholder="Full Name" name="name"><br><br>
         <input type="text" placeholder="Username" name="user"><br><br>
-        <input type="number" placeholder="Phone No." name="number"><br>
+        <input type="text" placeholder="Phone No." name="number"><br>
 				<input type="password" placeholder="Password" name="password"><br>
         <input type="password" placeholder="Repeat Password" name="rep_password"><br>
       </form>
 				<button type="submit" form="sign-up" value="Submit">Sign Up</button>
 		</div>
 </body>
-<script src="{{ url_for("static",filename="prefixfree.min.js") }}"></script>
+<script src="{{ url_for("static",filename="js/prefixfree.min.js") }}"></script>
 <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
 </html>

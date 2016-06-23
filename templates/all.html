@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+    <title>Data Table</title>
+        <link rel="stylesheet" href="{{ url_for("static/css",filename="style-all.css") }}">
+<head>
+  <body>
+<div class="table-title">
+<h3>DataBase</h3>
+</div>
+<table class="table-fill">
+<thead>
+<tr>
+<th class="text-left">Name</th>
+<th class="text-left">Author</th>
+<th class="text-left">Quantity</th>
+<th class="text-left">Section</th>
+</tr>
+</thead>
+<tbody class="table-hover">
+{% for book in books %}
+<tr>
+<td class="text-left">{{ book.name }}</td>
+<td class="text-left">{{ book.author }}</td>
+<td class="text-left">{{ book.quantity }}</td>
+<td class="text-left">{{ book.section }}</td>
+</tr>
+
+</tbody>
+</table>
+
+
+  </body>
+
+
+
+
+
+  </body>
+</html>

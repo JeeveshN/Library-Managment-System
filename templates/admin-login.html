@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Admin Log In</title>
+
+	<!-- Font awesome -->
+	<link rel="stylesheet" href="{{ url_for("static",filename="css/font-awesome.min.css") }}">
+	<!-- Sandstone Bootstrap CSS -->
+	<link rel="stylesheet" href="{{ url_for("static",filename="css/bootstrap.min.css") }}">
+	<!-- Admin Stye -->
+	<link rel="stylesheet" href="{{ url_for("static",filename="css/style.css") }}">
+
+</head>
+
+<body>
+
+	<div class="login-page bk-img" style="background-image: url({{ url_for("static",filename="img/books.jpg") }});">
+		<div class="form-content">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<h1 class="text-center text-bold text-light mt-4x">Admin Log In</h1>
+						<div class="well row pt-2x pb-3x bk-light">
+							<div class="col-md-8 col-md-offset-2">
+								{% for message in get_flashed_messages() %}
+								{{ message }}
+								{% endfor %}
+								<form action="{{ url_for('admin') }}" class="mt" method="post">
+
+									<label for="username" class="text-uppercase text-sm">Your Username or Email</label>
+									<input type="text" placeholder="Username" class="form-control mb" name="username">
+
+									<label for="password" class="text-uppercase text-sm">Password</label>
+									<input type="password" placeholder="Password" class="form-control mb" name="password">
+									<button class="btn btn-primary btn-block" type="submit">LOGIN</button>
+
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Loading Scripts -->
+	<script src="{{ url_for("static",filename="js/jquery.min.js") }}"></script>
+	<script src="{{ url_for("static",filename="js/bootstrap-select.min.js") }}"></script>
+	<script src="{{ url_for("static",filename="js/bootstrap.min.js") }}"></script>
+	<script src="{{ url_for("static",filename="js/main.js") }}"></script>
+
+</body>
+
+</html>
