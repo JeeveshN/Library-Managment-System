@@ -7,33 +7,41 @@ app.config['MONGOALCHEMY_DATABASE'] = 'library'
 app.config['SECRET_KEY']='Je123'
 
 db1=MongoAlchemy(app)
+
 class User_Login(db1.Document):
     name= db1.StringField()
     username= db1.StringField()
     password= db1.StringField()
     number= db1.IntField()
+
 class Book(db1.Document):
     name=db1.StringField()
     author=db1.StringField()
     quantity=db1.IntField()
     section=db1.StringField()
     issued_by=db1.ListField(db1.DictField(db1.StringField()))
+
 class Information(db1.Document):
     name=db1.StringField()
     username=db1.StringField()
     books=db1.ListField(db1.DictField(db1.StringField()))
+
 class Admin(db1.Document):
     username=db1.StringField()
     password=db1.StringField()
+
 if not Admin.query.filter(Admin.username=='admin').first():
     Admin=Admin(username='admin',password='admin')
     Admin.save()
+
 @app.route('/')
 def login():
     return render_template('login.html')
+
 @app.route('/signup')
 def signup():
     return render_template('sign-up.html')
+
 @app.route('/logged_in',methods=['POST','GET'])
 def logged_in():
     if request.method == 'POST':
@@ -46,6 +54,7 @@ def logged_in():
             return redirect(url_for('login'))
         else:
             return "Login Successfull"
+
 @app.route('/signed_up',methods=['POST','GET'])
 def signed_up():
     if request.method == 'POST':
@@ -63,13 +72,15 @@ def signed_up():
             newuser.save()
             return "Signed Up Successfull"
     return redirect(url_for('signup'))
+
 @app.route('/admin123')
 def admin123():
     if 'username' in session:
         username=session['username']
-        if username==Admin.query.all().first().username:
+        if username==Admin.query.one().username:
             return render_template("admin.html")
     return render_template("admin-login.html")
+
 @app.route('/admin',methods=['POST','GET'])
 def admin():
     if request.method == 'POST':
@@ -85,5 +96,11 @@ def admin():
             session['username']=potential_admin.username
             return render_template("admin.html")
     return render_template("admin-login.html")
+
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('username',None)
+    return redirect(url_for('admin123'))
+
 if __name__ == '__main__':
     app.run(debug=True)

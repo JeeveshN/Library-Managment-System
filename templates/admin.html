@@ -21,7 +21,7 @@
 				<button type="submit" form="login" value="Submit">Search</button>
         <button type="submit" value="Submit">Show All Books</button>
         <button type="submit" value="Submit">Issue Book</button>
-        <a href=""><button type="submit">Log Out</button></a>
+        <a href="{{ url_for('admin_logout') }}"><button type="submit">Log Out</button></a>
 		</div>
 </body>
 <script src="{{ url_for("static",filename="js/prefixfree.min.js") }}"></script>
