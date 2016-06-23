@@ -6,9 +6,12 @@
     <title>Data Table</title>
         <link rel="stylesheet" href="{{ url_for("static",filename="css/style-all.css") }}">
 <head>
-  <body>
+  <body >
+    <div class="body" style="background-image: url('{{ url_for("static",filename="img/database.jpg") }}')"></div>
 <div class="table-title">
 <h3>DataBase</h3>
+<a href="{{ url_for('admin') }}"><button type="submit">Admin Panel</button></a>
+<br><br>
 </div>
 <table class="table-fill">
 <thead>

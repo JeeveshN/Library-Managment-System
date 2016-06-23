@@ -5,7 +5,7 @@ body{
 	margin: 0;
 	padding: 0;
 	background: #fff;
-
+	overflow:hidden;
 	color: #fff;
 	font-family: Arial;
 	font-size: 12px;

@@ -1,5 +1,6 @@
 from flask import Flask,render_template,redirect,url_for,request,flash,session
 from flask.ext.mongoalchemy import MongoAlchemy
+import re
 
 app=Flask(__name__)
 #app.config["SQLALCHEMY_DATABASE_URI"]='sqlite:///User_Login.sqlite3'
@@ -13,6 +14,7 @@ class User_Login(db1.Document):
     username= db1.StringField()
     password= db1.StringField()
     number= db1.IntField()
+    email=db1.StringField()
 
 class Book(db1.Document):
     name=db1.StringField()
@@ -22,9 +24,9 @@ class Book(db1.Document):
     serialno=db1.IntField()
 
 class Information(db1.Document):
-    name=db1.StringField()
-    username=db1.StringField()
+    User=db1.DocumentField(User_Login)
     books=db1.ListField(db1.DictField(db1.StringField()))
+
 
 class Admin(db1.Document):
     username=db1.StringField()
@@ -91,7 +93,7 @@ def admin123():
 @app.route('/admin',methods=['POST','GET'])
 def admin():
     if check_admin():
-        render_template("admin-login.html")
+        return render_template("admin.html")
     if request.method == 'POST':
         if not request.form['username'] or not request.form['password']:
             flash("Please fill in All The Fields")
@@ -135,6 +137,7 @@ def add_books():
             elif Book.query.filter(Book.name==request.form['name']).first() and Book.query.filter(Book.author==request.form['author']).first():
                 book=Book.query.filter(Book.name==request.form['name']).first()
                 book.quantity=book.quantity+int(request.form['quantity'])
+                book.save()
                 flash("The Book has been Successfully Added")
             else:
                 book=Book(name=request.form['name'],author=request.form['author'],quantity=int(request.form['quantity']),section=request.form['section'],serialno=int(request.form['serialno']))
@@ -146,5 +149,19 @@ def add_books():
 ##    for book in Book.query.all():
 ##        book.remove()
 ##    return redirect(url_for('all_books'))
+@app.route('/search',methods=['POST','GET'])
+def search():
+    if check_admin():
+        if request.method == 'POST':
+            Query=request.form['search']
+            if  'author' in Query:
+                q=re.findall('(.+)-author',Query)
+                return render_template("all.html",books=Book.query.filter(Book.author.regex(q[0]) ).all())
+            elif 'title'in Query:
+                q=re.findall('(.+)-title',Query)
+                return render_template("all.html",books=Book.query.filter(Book.name.regex(q[0]) ).all())
+            else:
+                return render_template("all.html",books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all())
+    return redirect(url_for('admin123'))
 if __name__ == '__main__':
     app.run(debug=True)

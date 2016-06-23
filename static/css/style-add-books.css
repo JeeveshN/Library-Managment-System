@@ -9,6 +9,8 @@ body{
 	color: #fff;
 	font-family: Arial;
 	font-size: 12px;
+	overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .body{

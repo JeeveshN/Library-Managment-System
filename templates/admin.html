@@ -14,11 +14,11 @@
       {% for message in get_flashed_messages()%}
       {{ message }}
       {% endfor %}
-      <form action="" id="login" method="post">
-				<input type="text" placeholder="Search For Book" name="user"><br>
+      <form action="{{ url_for('search') }}" id="search" method="post">
+				<input type="text" placeholder="Search For Book" name="search"><br>
       </form>
       <br><br>
-				<button type="submit" form="login" value="Submit">Search</button>
+				<button type="submit" form="search" value="Submit">Search</button>
         <a href="{{ url_for('all_books') }}"><button type="submit">Show All Books</button></a>
         <button type="submit" value="Submit">Issue Book</button>
         <a href="{{ url_for('add') }}"><button type="submit">Add Book</button></a>
