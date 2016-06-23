@@ -1,0 +1,29 @@
+<!doctype html>
+<title>
+  Library Managment-Sign Up
+</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="css/style-add-books.css") }}">
+<body>
+  <div class="body" style="background-image: url({{ url_for("static",filename="img/add-books.jpg") }}"></div>
+		<div class="grad"></div>
+		<div class="header">
+			<div>Add <span>Book</span></div>
+		</div>
+		<br>
+		<div class="sign-up">
+      {% for message in get_flashed_messages()%}
+      {{ message }}
+      {% endfor %}
+      <form action="{{ url_for('add_books') }}" id="add-books" method="post">
+				<input type="text" placeholder="Name" name="name"><br><br>
+        <input type="text" placeholder="Author" name="author"><br><br>
+        <input type="text" placeholder="Quantity" name="quantity"><br><br>
+				<input type="text" placeholder="Section" name="section"><br><br>
+        <input type="text" placeholder="Serial No." name="serialno"><br><br>
+      </form>
+				<button type="submit" form="add-books" value="Submit">Add</button>
+		</div>
+</body>
+<script src="{{ url_for("static",filename="js/prefixfree.min.js") }}"></script>
+<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
     <title>Data Table</title>
-        <link rel="stylesheet" href="{{ url_for("static/css",filename="style-all.css") }}">
+        <link rel="stylesheet" href="{{ url_for("static",filename="css/style-all.css") }}">
 <head>
   <body>
 <div class="table-title">
@@ -17,6 +17,7 @@
 <th class="text-left">Author</th>
 <th class="text-left">Quantity</th>
 <th class="text-left">Section</th>
+<th class="text-left">Serial Number</th>
 </tr>
 </thead>
 <tbody class="table-hover">
@@ -26,8 +27,9 @@
 <td class="text-left">{{ book.author }}</td>
 <td class="text-left">{{ book.quantity }}</td>
 <td class="text-left">{{ book.section }}</td>
+<td class="text-left">{{ book.serialno }}</td>
 </tr>
-
+{% endfor %}
 </tbody>
 </table>
 
