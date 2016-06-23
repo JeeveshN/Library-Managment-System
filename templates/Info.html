@@ -1,0 +1,29 @@
+<!doctype html>
+<title>
+  Library Managment-Login
+</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="style-login.css") }}">
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>City</th>
+        <th>Address</th>
+        <th>Pin</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in users %}
+      <tr>
+        <td>{{ student.name }}</td>
+        <td>{{ student.username }}</td>
+        <td>{{ student.password }}</td>
+        <td>{{ student.number }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<script src="{{ url_for("static",filename="prefixfree.min.js") }}"></script>
+<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</html>

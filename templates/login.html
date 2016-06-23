@@ -1,0 +1,27 @@
+<!doctype html>
+<title>
+  Library Managment-Login
+</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="style-login.css") }}">
+<body>
+  <div class="body"></div>
+		<div class="grad"></div>
+		<div class="header">
+			<div>Site<span>Random</span></div>
+		</div>
+		<br>
+		<div class="login">
+      {% for message in get_flashed_messages()%}
+      {{ message }}
+      {% endfor %}
+      <form action="{{ url_for('logged_in') }}" id="login" method="post">
+				<input type="text" placeholder="username" name="user"><br>
+				<input type="password" placeholder="password" name="password"><br>
+      </form>
+				<button type="submit" form="login" value="Submit">Login</button>
+        <a href="{{ url_for('signup') }}"><button type="submit">Sign Up</button></a>
+		</div>
+</body>
+<script src="{{ url_for("static",filename="prefixfree.min.js") }}"></script>
+<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</html>
