@@ -5,7 +5,8 @@ body{
 	margin: 0;
 	padding: 0;
 	background: #fff;
-	overflow:hidden;
+	overflow-y: scroll;
+  overflow-x: hidden;
 	color: #fff;
 	font-family: Arial;
 	font-size: 12px;
@@ -19,28 +20,16 @@ body{
 	bottom: -40px;
 	width: auto;
 	height: auto;
+	background-image: url(http://ginva.com/wp-content/uploads/2012/07/city-skyline-wallpapers-008.jpg);
 	background-size: cover;
 	-webkit-filter: blur(5px);
 	z-index: 0;
 }
 
-.grad{
-	position: absolute;
-	top: -20px;
-	left: -20px;
-	right: -40px;
-	bottom: -40px;
-	width: auto;
-	height: auto;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
-	z-index: 1;
-	opacity: 0.7;
-}
-
 .header{
 	position: absolute;
-	top: calc(50% - 105px);
-	left: calc(50% - 355px);
+	top: calc(50% - 190px);
+	left: calc(50% - 105px);
 	z-index: 2;
 }
 
@@ -54,20 +43,22 @@ body{
 
 .header div span{
 	color: #5379fa !important;
+
 }
 
-.sign-up{
+.login{
 	position: absolute;
-	top: calc(50% - 185px);
-	left: calc(50% - 50px);
+	top: calc(50% - 75px);
+	left: calc(50% - 350px);
 	height: 150px;
-	width: 350px;
+	width: 850px;
 	padding: 10px;
 	z-index: 2;
 }
 
-.sign-up input[type=text]{
-	width: 250px;
+.login input[type=text]{
+
+	width: 650px;
 	height: 30px;
 	background: transparent;
 	border: 1px solid rgba(255,255,255,0.6);
@@ -79,22 +70,8 @@ body{
 	padding: 4px;
 }
 
-.sign-up input[type=password]{
-	width: 250px;
-	height: 30px;
-	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
-	border-radius: 2px;
-	color: #fff;
-	font-family: 'Exo', sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 4px;
-	margin-top: 10px;
-}
-
-.sign-up button{
-	width: 260px;
+.login button{
+	width: 130px;
 	height: 35px;
 	background: #fff;
 	border: 1px solid #fff;
@@ -108,25 +85,20 @@ body{
 	margin-top: 10px;
 }
 
-.sign-up input[type=button]:hover{
+.login button:hover{
 	opacity: 0.8;
 }
 
-.sign-up input[type=button]:active{
+.login button:active{
 	opacity: 0.6;
 }
 
-.sign-up input[type=text]:focus{
+.login input[type=text]:focus{
 	outline: none;
 	border: 1px solid rgba(255,255,255,0.9);
 }
 
-.sign-up input[type=password]:focus{
-	outline: none;
-	border: 1px solid rgba(255,255,255,0.9);
-}
-
-.sign-up input[type=button]:focus{
+.login button:focus{
 	outline: none;
 }
 
@@ -144,7 +116,7 @@ body{
 	height: 70px;
 	background-color: #333333;
 	text-align: center;
-
+	opacity: 1;
 }
 .name{
 	margin-top: 10px;

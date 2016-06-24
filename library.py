@@ -1,5 +1,6 @@
 from flask import Flask,render_template,redirect,url_for,request,flash,session
 from flask.ext.mongoalchemy import MongoAlchemy
+import datetime
 import re
 
 app=Flask(__name__)
@@ -9,24 +10,23 @@ app.config['SECRET_KEY']='Je123'
 
 db1=MongoAlchemy(app)
 
-class User_Login(db1.Document):
-    name= db1.StringField()
-    username= db1.StringField()
-    password= db1.StringField()
-    number= db1.IntField()
-    email=db1.StringField()
-
 class Book(db1.Document):
     name=db1.StringField()
     author=db1.StringField()
     quantity=db1.IntField()
     section=db1.StringField()
     serialno=db1.IntField()
+    issued_on=db1.DateTimeField()
+    to_be_returned=db1.DateTimeField()
+    issued_by=db1.StringField()
 
-class Information(db1.Document):
-    User=db1.DocumentField(User_Login)
-    books=db1.ListField(db1.DictField(db1.StringField()))
-
+class User_Login(db1.Document):
+    name= db1.StringField()
+    username= db1.StringField()
+    password= db1.StringField()
+    number= db1.IntField()
+    email=db1.StringField()
+    books = db1.ListField(db1.IntField())
 
 class Admin(db1.Document):
     username=db1.StringField()
@@ -37,32 +37,35 @@ if not Admin.query.filter(Admin.username=='admin').first():
     Admin.save()
 
 def check_admin():
-    if 'username' in session:
-        username=session['username']
-        if username==Admin.query.one().username:
+    if 'admin' in session:
+        admin=session['admin']
+        if admin==Admin.query.one().username:
             return True
     return False
-
-@app.route('/')
-def login():
-    return render_template('login.html')
 
 @app.route('/signup')
 def signup():
     return render_template('sign-up.html')
 
+@app.route('/')
 @app.route('/logged_in',methods=['POST','GET'])
 def logged_in():
+    if 'user' in session:
+        return render_template('logged-in.html',user=session['user'])
     if request.method == 'POST':
+        if not request.form['user'] or not request.form['password']:
+            flash('Please Fill All The Details')
+            return render_template('login.html')
         user=User_Login.query.filter(User_Login.username==request.form['user']).first()
         if not user:
             flash('Please Sign Up First')
-            return redirect(url_for('login'))
         elif user.password != request.form['password']:
             flash('Please enter the correct details')
-            return redirect(url_for('login'))
         else:
-            return "Login Successfull"
+            print user.name
+            session['user']=user.username
+            return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first())
+    return render_template('login.html')
 
 @app.route('/signed_up',methods=['POST','GET'])
 def signed_up():
@@ -84,10 +87,8 @@ def signed_up():
 
 @app.route('/admin123')
 def admin123():
-    if 'username' in session:
-        username=session['username']
-        if username==Admin.query.one().username:
-            return render_template("admin.html")
+    if check_admin():
+        return render_template("admin.html")
     return render_template("admin-login.html")
 
 @app.route('/admin',methods=['POST','GET'])
@@ -104,13 +105,13 @@ def admin():
         elif potential_admin.password != request.form['password']:
             flash('Wrong Details')
         else:
-            session['username']=potential_admin.username
+            session['admin']=potential_admin.username
             return render_template("admin.html")
     return render_template("admin-login.html")
 
 @app.route('/admin_logout')
 def admin_logout():
-    session.pop('username',None)
+    session.pop('admin',None)
     return redirect(url_for('admin123'))
 
 @app.route('/all_books')
@@ -140,15 +141,16 @@ def add_books():
                 book.save()
                 flash("The Book has been Successfully Added")
             else:
-                book=Book(name=request.form['name'],author=request.form['author'],quantity=int(request.form['quantity']),section=request.form['section'],serialno=int(request.form['serialno']))
+                book=Book(name=request.form['name'],author=request.form['author'],quantity=int(request.form['quantity']),section=request.form['section'],serialno=int(request.form['serialno']),
+                issued_on=datetime.datetime.now(),to_be_returned=datetime.datetime.now(),issued_by=Admin.query.one().username)
                 book.save()
                 flash("The Book has been Successfully Added")
     return redirect(url_for('admin123'))
 #@app.route('/delete_all',methods=['POST','GET'])
-##def delete_all():
-##    for book in Book.query.all():
-##        book.remove()
-##    return redirect(url_for('all_books'))
+#def delete_all():
+#    for book in Book.query.all():
+#        book.remove()
+#    return redirect(url_for('all_books'))
 @app.route('/search',methods=['POST','GET'])
 def search():
     if check_admin():
@@ -163,5 +165,16 @@ def search():
             else:
                 return render_template("all.html",books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all())
     return redirect(url_for('admin123'))
+@app.route('/all_books_users')
+def all_books_users():
+    if 'user' in session:
+        return render_template('User-Avail-Books.html',books=Book.query.all())
+    return redirect(url_for('logged_in'))
+
+@app.route('/user_logout')
+def user_logout():
+    session.pop('user',None)
+    return redirect(url_for('logged_in'))
+
 if __name__ == '__main__':
     app.run(debug=True)

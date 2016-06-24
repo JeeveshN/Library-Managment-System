@@ -1,0 +1,35 @@
+<!doctype html>
+<title>
+  Library Managment-Login
+</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="css/style-logged-in.css") }}">
+<body>
+  <div class="body" style="background-image:url({{ url_for("static",filename="img/logged-in-bg.jpg") }})"></div>
+		<!--<div class="grad"></div>-->
+		<div class="header">
+			<div>My <span>Panel</span></div>
+		</div>
+		<br>
+		<div class="login">
+      {% for message in get_flashed_messages()%}
+      {{ message }}
+      {% endfor %}
+      <form action="{{ url_for('search') }}" id="search" method="post">
+				<input type="text" placeholder="Search For Book" name="search"><br>
+      </form>
+      <br><br>
+				<button type="submit" form="search" value="Submit">Search</button>
+        <a href="{{ url_for('all_books_users') }}"><button type="submit">Show All Books</button></a>
+        <button type="submit" value="Submit">Issued Books</button>
+        <a href="{{ url_for('add') }}"><button type="submit">ChangePassword</button></a>
+        <a href="{{ url_for('user_logout') }}"><button type="submit">Log Out</button></a>
+        <!--<a href=""><button type="submit">Delete DataBase</button></a>-->
+		</div>
+    <div class="footer">
+      <div class="name">
+        <div>Copyright &copy; <span>Jeevesh Narang</span></div>
+    </div>
+</body>
+<script src="{{ url_for("static",filename="js/prefixfree.min.js") }}"></script>
+<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</html>
