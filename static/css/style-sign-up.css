@@ -137,3 +137,25 @@ body{
 ::-moz-input-placeholder{
    color: rgba(255,255,255,0.6);
 }
+.footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	height: 70px;
+	background-color: #333333;
+	text-align: center;
+	
+}
+.name{
+	margin-top: 10px;
+	font-family: 'Exo', sans-serif;
+	font-size: 15px;
+}
+.name div{
+	color: #fff;
+	font-weight: 200;
+}
+.name div span{
+	color: #5379fa !important;
+	font-weight: bold;
+}
