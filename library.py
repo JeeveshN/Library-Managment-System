@@ -1,5 +1,5 @@
 from flask import Flask,render_template,redirect,url_for,request,flash,session
-from flask.ext.mongoalchemy import MongoAlchemy
+from flask_mongoalchemy import MongoAlchemy
 import datetime
 import re
 
