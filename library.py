@@ -26,7 +26,7 @@ class User_Login(db1.Document):
     password= db1.StringField()
     number= db1.IntField()
     email=db1.StringField()
-    books = db1.ListField(db1.IntField())
+    books=db1.ListField(db1.IntField(),db_field='Books')
 
 class Admin(db1.Document):
     username=db1.StringField()
@@ -80,7 +80,8 @@ def signed_up():
         elif User_Login.query.filter(User_Login.username==request.form['user']).first():
             flash("Please choose a different Username")
         else:
-            newuser=User_Login(name=request.form["name"],username=request.form["user"],password=request.form["password"],number=long(request.form["number"]))
+            newuser=User_Login(name=request.form["name"],username=request.form["user"],password=request.form["password"],number=long(request.form["number"])
+            ,email=request.form['email'],books=list())
             newuser.save()
             return "Signed Up Successfull"
     return redirect(url_for('signup'))
@@ -176,5 +177,45 @@ def user_logout():
     session.pop('user',None)
     return redirect(url_for('logged_in'))
 
+@app.route('/issue_book')
+def issue_book():
+    if check_admin():
+        return render_template('issue-book.html')
+    return redirect(url_for('admin123'))
+
+@app.route('/search_issue',methods=['POST','GET'])
+def search_issue():
+    if check_admin():
+        if request.method == 'POST':
+            if not request.form['search']:
+                flash('Fill The Fields')
+            else:
+                Query=request.form['search']
+                if  'author' in Query:
+                    q=re.findall('(.+)-author',Query)
+                    return render_template("issue-book.html",books=Book.query.filter(Book.author.regex(q[0]) ).all())
+                elif 'title'in Query:
+                    q=re.findall('(.+)-title',Query)
+                    return render_template("issue-book.html",books=Book.query.filter(Book.name.regex(q[0]) ).all())
+                else:
+                    return render_template("issue-book.html",books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all())
+        return redirect(url_for('issue_book'))
+    return redirect(url_for('admin123'))
+@app.route('/book_issued',methods=['POST','GET'])
+def book_issued():
+    if check_admin():
+        if request.method == 'POST':
+            if not request.form['username'] or not request.form['serialno']:
+                flash('Please Fill All The Fields')
+            elif Book.query.filter(Book.serialno==int(request.form['serialno'])).first().quantity==0:
+                flash('The Book Is Not Available')
+            else:
+                user=User_Login.query.filter(User_Login.username==request.form['username']).first()
+                user.books.append(int(request.form['serialno']))
+                user.save()
+                flash('Book Successfully Issued')
+                return redirect(url_for('admin'))
+            return render_template('issue-book.html')
+    return redirect(url_for('admin'))
 if __name__ == '__main__':
     app.run(debug=True)

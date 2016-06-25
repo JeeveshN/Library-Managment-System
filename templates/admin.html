@@ -20,7 +20,7 @@
       <br><br>
 				<button type="submit" form="search" value="Submit">Search</button>
         <a href="{{ url_for('all_books') }}"><button type="submit">Show All Books</button></a>
-        <button type="submit" value="Submit">Issue Book</button>
+        <a href="{{ url_for('issue_book') }}"><button type="submit" value="Submit">Issue Book</button></a>
         <a href="{{ url_for('add') }}"><button type="submit">Add Book</button></a>
         <a href="{{ url_for('admin_logout') }}"><button type="submit">Log Out</button></a>
         <!--<a href=""><button type="submit">Delete DataBase</button></a>-->
