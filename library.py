@@ -207,10 +207,15 @@ def book_issued():
         if request.method == 'POST':
             if not request.form['username'] or not request.form['serialno']:
                 flash('Please Fill All The Fields')
+            elif not User_Login.query.filter(User_Login.username==request.form['username']).first():
+                flash("Username is Wrong")
             elif Book.query.filter(Book.serialno==int(request.form['serialno'])).first().quantity==0:
                 flash('The Book Is Not Available')
             else:
                 user=User_Login.query.filter(User_Login.username==request.form['username']).first()
+                book=Book.query.filter(Book.serialno==int(request.form['serialno'])).first()
+                book.quantity=book.quantity-1
+                book.save()
                 user.books.append(int(request.form['serialno']))
                 user.save()
                 flash('Book Successfully Issued')
@@ -218,4 +223,4 @@ def book_issued():
             return render_template('issue-book.html')
     return redirect(url_for('admin'))
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')

@@ -10,6 +10,9 @@
     <div class="body" style="background-image: url('{{ url_for("static",filename="img/database.jpg") }}')"></div>
 <div class="table-title">
   <h3 style="font-family: 'Exo', sans-serif">Issue Book</h3>
+  {% for message in get_flashed_messages() %}
+  {{ message }}
+  {% endfor %}
   <form action="{{ url_for('book_issued') }}" id="issue" method="post">
     <input type="text" placeholder="User-Name" name="username">
     <input type="text" placeholder="Serial-No." name="serialno">
