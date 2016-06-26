@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{{ url_for("static",filename="css/style-all.css") }}">
 <head>
   <body >
-    <div class="body" style="background-image: url('{{ url_for("static",filename="img/database.jpg") }}')"></div>
+<div>
 <div class="table-title">
 <h3>DataBase</h3>
 <a href="{{ url_for('admin') }}"><button type="submit">Admin Panel</button></a>
@@ -20,7 +20,7 @@
 <th class="text-left">Author</th>
 <th class="text-left">Quantity</th>
 <th class="text-left">Section</th>
-<th class="text-left">Serial Number</th>
+<th class="text-left">Serial No.</th>
 </tr>
 </thead>
 <tbody class="table-hover">
@@ -35,17 +35,13 @@
 {% endfor %}
 </tbody>
 </table>
+</div>
+<div class="spacer">
+</div>
 
-
-  </body>
   <div class="footer">
     <div class="name">
       <div>Copyright &copy; <span>Jeevesh Narang</span></div>
   </div>
-
-
-
-
-
-  </body>
+</body>
 </html>

@@ -118,6 +118,8 @@ def admin_logout():
 @app.route('/all_books')
 def all_books():
     if check_admin():
+        for book in Book.query.all():
+            print book.name
         return render_template('all.html',books=Book.query.all())
     else:
         return redirect(url_for('admin123'))
@@ -222,5 +224,33 @@ def book_issued():
                 return redirect(url_for('admin'))
             return render_template('issue-book.html')
     return redirect(url_for('admin'))
+
+@app.route('/change_ad')
+def change_ad():
+    if check_admin():
+        return render_template('change-admin.html')
+    return redirect(url_for('admin123'))
+
+@app.route('/change_admin',methods=['POST','GET'])
+def change_admin():
+    if check_admin():
+        if request.method == 'POST':
+            if not request.form['username'] or not request.form['prev_pass'] or not request.form['new_pass'] or not request.form['rep_new_pass']:
+                flash('Please Fill In All The Fields')
+            elif request.form['prev_pass'] != Admin.query.one().password:
+                flash('Admin Password is Wrong')
+            elif request.form['new_pass'] != request.form['rep_new_pass']:
+                flash('Passwords don\'t Match')
+            else:
+                for admin in Admin.query.all():
+                    admin.remove()
+                new_admin=Admin(username=request.form['username'],password=request.form['new_pass'])
+                new_admin.save()
+                flash('Please Login With New Credentials')
+                return redirect(url_for('admin_logout'))
+    return redirect(url_for('admin123'))
+
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug=True)

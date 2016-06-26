@@ -1,0 +1,32 @@
+<!doctype html>
+<title>
+  Library Managment-Sign Up
+</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="css/style-admin-change.css") }}">
+<body>
+  <div class="body" style="background-image: url({{ url_for("static",filename="img/main-bg.jpg") }}"></div>
+		<div class="grad"></div>
+		<div class="header">
+			<div>Change <span>Admin</span></div>
+		</div>
+		<br>
+		<div class="admin-change">
+      {% for message in get_flashed_messages()%}
+      {{ message }}
+      {% endfor %}
+      <form action="{{ url_for('change_admin') }}" id="admin-change" method="post">
+				<input type="text" placeholder="New Username" name="username"><br><br>
+        <input type="password" placeholder="Old Password" name="prev_pass"><br><br>
+        <input type="password" placeholder="New Password" name="new_pass"><br><br>
+        <input type="password" placeholder="Repeat Password" name="rep_new_pass"><br>
+      </form>
+				<button type="submit" form="admin-change" value="Submit">Change Admin</button>
+		</div>
+    <div class="footer">
+      <div class="name">
+        <div>Copyright &copy; <span>Jeevesh Narang</span></div>
+    </div>
+</body>
+<script src="{{ url_for("static",filename="js/prefixfree.min.js") }}"></script>
+<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</html>
