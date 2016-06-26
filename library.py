@@ -91,7 +91,6 @@ def signup():
 @app.route('/logged_in',methods=['POST','GET'])
 def logged_in():
     if 'user' in session:
-        print session['user']
         return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==session['user']).first(),time=None)
     if request.method == 'POST':
         if not request.form['user'] or not request.form['password']:
@@ -103,7 +102,6 @@ def logged_in():
         elif user.password != request.form['password']:
             flash('Please enter the correct details')
         else:
-            print user.name
             session['user']=user.username
             return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first(),time='first')
     return render_template('login.html')
@@ -124,8 +122,9 @@ def signed_up():
             newuser=User_Login(name=request.form["name"],username=request.form["user"],password=request.form["password"],number=long(request.form["number"])
             ,email=request.form['email'],books=list())
             newuser.save()
+            flash('You Have signed up successfully')
             session['username']=newuser.username
-            return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first())
+            return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first(),time='first')
     return redirect(url_for('signup'))
 
 @app.route('/admin123')
@@ -299,9 +298,15 @@ def change_admin():
                 flash('Please Login With New Credentials')
                 return redirect(url_for('admin_logout'))
     return redirect(url_for('admin123'))
-
-
-
+@app.route('/search_user',methods=['POST','GET'])
+def search_user():
+    if 'username' in session:
+        user=User_Login.query.filter(User_Login.username==session['username']).first()
+        if request.method == 'POST':
+            if search_P(request.form['search']):
+                obj=search_P(request.form['search'])
+                return render_template("User-Avail-Books.html",books=obj.Books)
+    return redirect(url_for('logged_in'))
 
 if __name__ == '__main__':
     app.run(debug=True)

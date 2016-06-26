@@ -18,7 +18,7 @@
       {% for message in get_flashed_messages()%}
       {{ message }}
       {% endfor %}
-      <form action="{{ url_for('search') }}" id="search" method="post">
+      <form action="{{ url_for('search_user') }}" id="search" method="post">
 				<input type="text" placeholder="Search For Book" name="search"><br>
       </form>
       <br><br>
