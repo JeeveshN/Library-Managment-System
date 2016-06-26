@@ -20,8 +20,7 @@ body {
 	bottom: -40px;
 	width: auto;
 	height: auto;
-	background-size: cover;;
-
+	background-size: cover;
 	z-index: -1000;
 }
 
@@ -54,7 +53,7 @@ div.table-title {
   background: white;
   border-radius:3px;
   border-collapse: collapse;
-  height: 320px;
+  height: 220px;
   margin: auto;
   max-width: 1100px;
   padding:5px;
@@ -239,5 +238,5 @@ td.text-right {
 	padding: 4px;
 }
 #iss {
-  width: 130px;
+  width: 85px;
 }

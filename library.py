@@ -28,6 +28,16 @@ class User_Login(db1.Document):
     email=db1.StringField()
     books=db1.ListField(db1.IntField(),db_field='Books')
 
+class search_object():
+    Books=list()
+    Users=list()
+    query=None
+
+    def __init__(self,books,users,query):
+        self.Books=books
+        self.Users=users
+        self.query=query
+
 class Admin(db1.Document):
     username=db1.StringField()
     password=db1.StringField()
@@ -42,6 +52,36 @@ def check_admin():
         if admin==Admin.query.one().username:
             return True
     return False
+def get_books(user):
+    books=list()
+    for sno in user.books:
+        books.append(Book.query.filter(Book.serialno==sno).first())
+    return books
+
+def search_P(Query):
+    if  'author' in Query:
+        q=re.findall('(.+)-author',Query)
+        books=Book.query.filter(Book.author.regex(q[0]) ).all()
+        return search_object(books,list(),None)
+    elif 'title'in Query:
+        q=re.findall('(.+)-title',Query)
+        books=Book.query.filter(Book.name.regex(q[0]) ).all()
+        return search_object(books,list(),None)
+    elif 'book' in Query:
+        books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all()
+        return search_object(books,list(),None)
+    elif 'user' in Query:
+        q=re.findall('(.+)-user',Query)
+        users=User_Login.query.filter(User_Login.username.regex(q[0])).all()
+        user=users[0]
+        books=get_books(user)
+        query='user'
+        return search_object(books,users,query)
+    elif Query == 'all-user':
+        return search_object(books=get_all_books(),users=User_Login.query.all(),query='user')
+    else:
+        return False
+
 
 @app.route('/signup')
 def signup():
@@ -51,7 +91,8 @@ def signup():
 @app.route('/logged_in',methods=['POST','GET'])
 def logged_in():
     if 'user' in session:
-        return render_template('logged-in.html',user=session['user'])
+        print session['user']
+        return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==session['user']).first(),time=None)
     if request.method == 'POST':
         if not request.form['user'] or not request.form['password']:
             flash('Please Fill All The Details')
@@ -64,7 +105,7 @@ def logged_in():
         else:
             print user.name
             session['user']=user.username
-            return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first())
+            return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first(),time='first')
     return render_template('login.html')
 
 @app.route('/signed_up',methods=['POST','GET'])
@@ -83,7 +124,8 @@ def signed_up():
             newuser=User_Login(name=request.form["name"],username=request.form["user"],password=request.form["password"],number=long(request.form["number"])
             ,email=request.form['email'],books=list())
             newuser.save()
-            return "Signed Up Successfull"
+            session['username']=newuser.username
+            return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==request.form['user']).first())
     return redirect(url_for('signup'))
 
 @app.route('/admin123')
@@ -158,16 +200,13 @@ def add_books():
 def search():
     if check_admin():
         if request.method == 'POST':
-            Query=request.form['search']
-            if  'author' in Query:
-                q=re.findall('(.+)-author',Query)
-                return render_template("all.html",books=Book.query.filter(Book.author.regex(q[0]) ).all())
-            elif 'title'in Query:
-                q=re.findall('(.+)-title',Query)
-                return render_template("all.html",books=Book.query.filter(Book.name.regex(q[0]) ).all())
+            if search_P(request.form['search']):
+                obj=search_P(request.form['search'])
+                return render_template("all.html",books=obj.Books,query=obj.query,users=obj.Users)
             else:
-                return render_template("all.html",books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all())
+                flash('Use [title/author-author for Books] or [Username-user for username]')
     return redirect(url_for('admin123'))
+
 @app.route('/all_books_users')
 def all_books_users():
     if 'user' in session:
@@ -189,39 +228,50 @@ def issue_book():
 def search_issue():
     if check_admin():
         if request.method == 'POST':
-            if not request.form['search']:
-                flash('Fill The Fields')
+            if search_P(request.form['search']):
+                obj=search_P(request.form['search'])
+                return render_template("issue-book.html",books=obj.Books,query=obj.query,users=obj.Users)
             else:
-                Query=request.form['search']
-                if  'author' in Query:
-                    q=re.findall('(.+)-author',Query)
-                    return render_template("issue-book.html",books=Book.query.filter(Book.author.regex(q[0]) ).all())
-                elif 'title'in Query:
-                    q=re.findall('(.+)-title',Query)
-                    return render_template("issue-book.html",books=Book.query.filter(Book.name.regex(q[0]) ).all())
-                else:
-                    return render_template("issue-book.html",books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all())
+                flash('Use [title/author-author for Books] or [Username-user for username]')
         return redirect(url_for('issue_book'))
     return redirect(url_for('admin123'))
-@app.route('/book_issued',methods=['POST','GET'])
-def book_issued():
+@app.route('/book_issue_return',methods=['POST','GET'])
+def book_issue_return():
     if check_admin():
         if request.method == 'POST':
             if not request.form['username'] or not request.form['serialno']:
                 flash('Please Fill All The Fields')
             elif not User_Login.query.filter(User_Login.username==request.form['username']).first():
                 flash("Username is Wrong")
-            elif Book.query.filter(Book.serialno==int(request.form['serialno'])).first().quantity==0:
-                flash('The Book Is Not Available')
+            if request.form['Submit']=='Issue':
+                if Book.query.filter(Book.serialno==int(request.form['serialno'])).first().quantity==0:
+                    flash('The Book Is Not Available')
+                else:
+                    user=User_Login.query.filter(User_Login.username==request.form['username']).first()
+                    book=Book.query.filter(Book.serialno==int(request.form['serialno'])).first()
+                    book.quantity=book.quantity-1
+                    book.issued_on=datetime.datetime.today()
+                    date=book.issued_on + datetime.timedelta(days=7,weeks=0,hours=0,minutes=0,milliseconds=0,microseconds=0,seconds=0)
+                    book.to_be_returned= date
+                    book.save()
+                    user.books.append(int(request.form['serialno']))
+                    user.save()
+                    flash('Book Successfully Issued')
+                    return redirect(url_for('admin'))
             else:
-                user=User_Login.query.filter(User_Login.username==request.form['username']).first()
-                book=Book.query.filter(Book.serialno==int(request.form['serialno'])).first()
-                book.quantity=book.quantity-1
-                book.save()
-                user.books.append(int(request.form['serialno']))
-                user.save()
-                flash('Book Successfully Issued')
-                return redirect(url_for('admin'))
+                if not Book.query.filter(Book.serialno==int(request.form['serialno'])).first():
+                    flash("Serial No. Not In Database")
+                elif not int(request.form['serialno']) in User_Login.query.filter(User_Login.username==request.form['username']).first().books:
+                    flash("The User never issued this Book")
+                else:
+                    user=User_Login.query.filter(User_Login.username==request.form['username']).first()
+                    user.books.remove(int(request.form['serialno']))
+                    user.save()
+                    book=Book.query.filter(Book.serialno==int(request.form['serialno'])).first()
+                    book.quantity=book.quantity+1
+                    book.save()
+                    flash('Book Successfully Returned')
+                    return redirect(url_for('admin'))
             return render_template('issue-book.html')
     return redirect(url_for('admin'))
 
@@ -249,6 +299,7 @@ def change_admin():
                 flash('Please Login With New Credentials')
                 return redirect(url_for('admin_logout'))
     return redirect(url_for('admin123'))
+
 
 
 

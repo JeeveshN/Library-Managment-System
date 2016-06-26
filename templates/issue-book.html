@@ -13,10 +13,11 @@
   {% for message in get_flashed_messages() %}
   {{ message }}
   {% endfor %}
-  <form action="{{ url_for('book_issued') }}" id="issue" method="post">
+  <form action="{{ url_for('book_issue_return') }}" id="issue" method="post">
     <input type="text" placeholder="User-Name" name="username">
     <input type="text" placeholder="Serial-No." name="serialno">
-    <button type="submit" form="issue" id="iss">Issue Book</button>
+    <button type="submit" form="issue" id="iss" name="Submit" value="Issue">Issue Book</button>
+    <button type="submit" form="issue" id="iss" name="Submit" value="Return">Return Book</button>
     <a href="{{ url_for('admin') }}"><button type="button" id="iss">Cancel</button></a>
   </form>
   <br><br>
@@ -28,12 +29,42 @@
 </div>
 <table class="table-fill">
 <thead>
+{% if query == "user" %}
 <tr>
 <th class="text-left">Name</th>
-<th class="text-left">Author</th>
+<th class="text-left">number</th>
+<th class="text-left">E-mail</th>
+<th class="text-left" colspan="3" rowspan="3">Books</th>
+</tr>
+</thead>
+<tbody class="table-hover">
+{% for user in users %}
+<tr>
+<td class="text-left">{{ user.name }}</td>
+<td class="text-left">{{ user.number }}</td>
+<td class="text-left">{{ user.email }}</td>
+<td class="text-left">
+{% for book in books %}
+<ul>
+<li>NAME:&nbsp&nbsp&nbsp{{ book.name }}</li>
+<li>Issued On:&nbsp&nbsp&nbsp{{ book.issued_on.date() }}</li>
+<li>To Be Returned On:&nbsp&nbsp&nbsp{{ book.to_be_returned.date() }}</li>
+<li>Serial No.:&nbsp&nbsp&nbsp{{ book.serialno }}</li>
+</ul>
+<br>
+<br>
+{% endfor %}
+</td>
+
+</tr>
+{% endfor %}
+{% else %}
+<tr>
+<th class="text-left">Name</th>
+<th class="text-left">author</th>
 <th class="text-left">Quantity</th>
 <th class="text-left">Section</th>
-<th class="text-left">Serial Number</th>
+<th class="text-left">Serial No.</th>
 </tr>
 </thead>
 <tbody class="table-hover">
@@ -46,6 +77,7 @@
 <td class="text-left">{{ book.serialno }}</td>
 </tr>
 {% endfor %}
+{% endif %}
 </tbody>
 </table>
 

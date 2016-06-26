@@ -7,7 +7,11 @@
   <div class="body" style="background-image:url({{ url_for("static",filename="img/logged-in-bg.jpg") }})"></div>
 		<!--<div class="grad"></div>-->
 		<div class="header">
+      {% if not time %}
 			<div>My <span>Panel</span></div>
+      {% else %}
+      <div>Welcome <span>{{ user.name }}</span></div>
+      {% endif %}
 		</div>
 		<br>
 		<div class="login">
