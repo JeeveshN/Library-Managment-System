@@ -15,7 +15,7 @@ class Book(db1.Document):
     author=db1.StringField()
     quantity=db1.IntField()
     section=db1.StringField()
-    serialno=db1.IntField()
+    serialno=db1.ListField(db1.IntField(),db_field='Books')
     issued_on=db1.DateTimeField()
     to_be_returned=db1.DateTimeField()
     issued_by=db1.StringField()
@@ -68,6 +68,12 @@ def get_books_user(user):
             date=False
         books[book]=date
     return books
+def get_bookby_serialno(serialno):
+    for book in Book.query.all():
+        if serialno in book.serialno:
+            return book
+        else:
+            return False
 def search_P(Query):
     if  'author' in Query:
         q=re.findall('(.+)-author',Query)
@@ -84,12 +90,22 @@ def search_P(Query):
         books=get_books(user)
         query='user'
         return search_object(books,users,query)
+    elif 'serial' in Query:
+        q=re.findall('(.+)-serial',Query)
+        print q
+        book=get_bookby_serialno(int(q[0]))
+        books=list()
+        books.append(book)
+        return search_object(books,list(),None)
+    elif 'section' in Query:
+        q=re.findall('(.+)-section',Query)
+        books=Book.query.filter(Book.name.regex(q[0])).all()
+        return search_object(books,list(),None)
     elif Query == 'all-user':
         return search_object(books=get_all_books(),users=User_Login.query.all(),query='user')
-    else:
-        books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all()
+    elif Query:
+        books=list(set(Book.query.filter(Book.name.regex(Query)).all())|set(Book.query.filter(Book.author.regex(Query)).all()))
         return search_object(books,list(),None)
-
 
 @app.route('/signup')
 def signup():
@@ -98,6 +114,7 @@ def signup():
 @app.route('/')
 @app.route('/logged_in',methods=['POST','GET'])
 def logged_in():
+
     if 'user' in session:
         return render_template('logged-in.html',user=User_Login.query.filter(User_Login.username==session['user']).first(),time=None)
     if request.method == 'POST':
@@ -167,8 +184,6 @@ def admin_logout():
 @app.route('/all_books')
 def all_books():
     if check_admin():
-        for book in Book.query.all():
-            print book.name
         return render_template('all.html',books=Book.query.all())
     else:
         return redirect(url_for('admin123'))
@@ -190,13 +205,29 @@ def add_books():
             elif Book.query.filter(Book.name==request.form['name']).first() and Book.query.filter(Book.author==request.form['author']).first():
                 book=Book.query.filter(Book.name==request.form['name']).first()
                 book.quantity=book.quantity+int(request.form['quantity'])
-                book.save()
-                flash("The Book has been Successfully Added")
+                sno=list()
+                for i in re.findall('[0-9]+',request.form['serialno']):
+                    sno.append(int(i))
+                if len(sno) != int(request.form['quantity']):
+                    flash('Serial Number Missing')
+                    return render_template('add-books.html')
+                else:
+                    book.serialno=sno
+                    book.save()
+                    flash("The Book has been Successfully Added")
             else:
-                book=Book(name=request.form['name'],author=request.form['author'],quantity=int(request.form['quantity']),section=request.form['section'],serialno=int(request.form['serialno']),
+                book=Book(name=request.form['name'],author=request.form['author'],quantity=int(request.form['quantity']),section=request.form['section'],serialno=list(),
                 issued_on=datetime.datetime.now(),to_be_returned=datetime.datetime.now(),issued_by=Admin.query.one().username)
-                book.save()
-                flash("The Book has been Successfully Added")
+                sno=list()
+                for i in re.findall('[0-9]+',request.form['serialno']):
+                    sno.append(int(i))
+                if len(sno) != int(request.form['quantity']):
+                    flash('Serial Number Missing')
+                    return render_template('add-books.html')
+                else:
+                    book.serialno = sno
+                    book.save()
+                    flash("The Book has been Successfully Added")
     return redirect(url_for('admin123'))
 #@app.route('/delete_all',methods=['POST','GET'])
 #def delete_all():
@@ -255,18 +286,19 @@ def book_issue_return():
                     flash('The Book Is Not Available')
                 else:
                     user=User_Login.query.filter(User_Login.username==request.form['username']).first()
-                    book=Book.query.filter(Book.serialno==int(request.form['serialno'])).first()
+                    book=get_bookby_serialno(int(request.form['serialno']))
                     book.quantity=book.quantity-1
                     book.issued_on=datetime.datetime.today()
                     date=book.issued_on + datetime.timedelta(days=7,weeks=0,hours=0,minutes=0,milliseconds=0,microseconds=0,seconds=0)
                     book.to_be_returned= date
+                    book.serialno.remove(int(request.form['serialno']))
                     book.save()
                     user.books.append(int(request.form['serialno']))
                     user.save()
                     flash('Book Successfully Issued')
                     return redirect(url_for('admin'))
             else:
-                if not Book.query.filter(Book.serialno==int(request.form['serialno'])).first():
+                if not get_bookby_serialno(int(request.form['serialno'])):
                     flash("Serial No. Not In Database")
                 elif not int(request.form['serialno']) in User_Login.query.filter(User_Login.username==request.form['username']).first().books:
                     flash("The User never issued this Book")
@@ -274,8 +306,9 @@ def book_issue_return():
                     user=User_Login.query.filter(User_Login.username==request.form['username']).first()
                     user.books.remove(int(request.form['serialno']))
                     user.save()
-                    book=Book.query.filter(Book.serialno==int(request.form['serialno'])).first()
+                    book=get_bookby_serialno(int(request.form['serialno']))
                     book.quantity=book.quantity+1
+                    book.serialno.append(int(request.form['serialno']))
                     book.save()
                     flash('Book Successfully Returned')
                     return redirect(url_for('admin'))
@@ -346,4 +379,4 @@ def change_user():
         return render_template('change-user.html')
     return redirect(url_for('logged_in'))
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')

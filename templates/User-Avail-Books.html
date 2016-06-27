@@ -27,14 +27,14 @@
 {% for book in books %}
 {% if book.quantity==0%}
 <tr bgcolor="#ff8080">
-<td class="text-left">{{ book.name }}</td>
+<td class="text-left" >{{ book.name }}</td>
 <td class="text-left">{{ book.author }}</td>
-<td class="text-left">Not Available</td>
+<td class="text-left" style="background-color:#ff8080">Not Available</td>
 <td class="text-left">{{ book.section }}</td>
 </tr>
 {% endif %}
 {% if book.quantity != 0 %}
-<tr style="background-color:#ff8080">
+<tr >
 <td class="text-left">{{ book.name }}</td>
 <td class="text-left">{{ book.author }}</td>
 <td class="text-left">Available</td>
