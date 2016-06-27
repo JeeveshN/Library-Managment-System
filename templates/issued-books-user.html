@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+    <title>Data Table</title>
+        <link rel="stylesheet" href="{{ url_for("static",filename="css/style-all.css") }}">
+<head>
+  <body >
+    <div class="body" style="background-image: url('{{ url_for("static",filename="img/database.jpg") }}')"></div>
+<div class="table-title">
+<h3>Issued Books</h3>
+<a href="{{ url_for('logged_in') }}"><button type="submit">My Panel</button></a>
+<br><br>
+</div>
+<table class="table-fill">
+<thead>
+<tr>
+<th class="text-left">Name</th>
+<th class="text-left">Author</th>
+<th class="text-left">Issued On</th>
+<th class="text-left">To Be Returned On</th>
+</tr>
+</thead>
+<tbody class="table-hover">
+{% for book,date in books.items() %}
+{% if date==True %}
+<tr >
+<td class="text-left" style="background-color:#ff8080 !important;" >{{ book.name }}</td>
+<td class="text-left" style="background-color:#ff8080 !important;">{{ book.author }}</td>
+<td class="text-left" style="background-color:#ff8080 !important;">{{ book.issued_on.date() }}</td>
+<td class="text-left" style="background-color:#ff8080 !important;">{{ book.to_be_returned.date() }}</td>
+</tr>
+{% else %}
+<tr>
+<td class="text-left">{{ book.name }}</td>
+<td class="text-left">{{ book.author }}</td>
+<td class="text-left">{{ book.issued_on.date() }}</td>
+<td class="text-left">{{ book.to_be_returned.date() }}</td>
+</tr>
+{% endif %}
+{% endfor %}
+</tbody>
+</table>
+<div class="spacer">
+</div>
+<div class="footer">
+  <div class="name">
+    <div>Copyright &copy; <span>Jeevesh Narang</span></div>
+  </div>
+
+
+
+
+
+  </body>
+</html>

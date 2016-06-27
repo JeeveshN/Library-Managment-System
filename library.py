@@ -52,12 +52,22 @@ def check_admin():
         if admin==Admin.query.one().username:
             return True
     return False
+
 def get_books(user):
     books=list()
     for sno in user.books:
         books.append(Book.query.filter(Book.serialno==sno).first())
     return books
-
+def get_books_user(user):
+    books=dict()
+    for sno in user.books:
+        book=Book.query.filter(Book.serialno==sno).first()
+        if datetime.date.today() >= book.to_be_returned.date():
+            date=True
+        else:
+            date=False
+        books[book]=date
+    return books
 def search_P(Query):
     if  'author' in Query:
         q=re.findall('(.+)-author',Query)
@@ -66,9 +76,6 @@ def search_P(Query):
     elif 'title'in Query:
         q=re.findall('(.+)-title',Query)
         books=Book.query.filter(Book.name.regex(q[0]) ).all()
-        return search_object(books,list(),None)
-    elif 'book' in Query:
-        books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all()
         return search_object(books,list(),None)
     elif 'user' in Query:
         q=re.findall('(.+)-user',Query)
@@ -80,7 +87,8 @@ def search_P(Query):
     elif Query == 'all-user':
         return search_object(books=get_all_books(),users=User_Login.query.all(),query='user')
     else:
-        return False
+        books=Book.query.filter(Book.name.regex(Query)).all()+Book.query.filter(Book.author.regex(Query)).all()
+        return search_object(books,list(),None)
 
 
 @app.route('/signup')
@@ -300,13 +308,42 @@ def change_admin():
     return redirect(url_for('admin123'))
 @app.route('/search_user',methods=['POST','GET'])
 def search_user():
-    if 'username' in session:
-        user=User_Login.query.filter(User_Login.username==session['username']).first()
+    if 'user' in session:
+        user=User_Login.query.filter(User_Login.username==session['user']).first()
         if request.method == 'POST':
             if search_P(request.form['search']):
                 obj=search_P(request.form['search'])
                 return render_template("User-Avail-Books.html",books=obj.Books)
+            else:
+                flash('Use [title/author-author for Books] or [Username-user for username]')
     return redirect(url_for('logged_in'))
 
+@app.route('/issued_books_user')
+def issued_books_user():
+    if 'user' in session:
+        user=User_Login.query.filter(User_Login.username==session['user']).first()
+        return render_template("issued-books-user.html",books=get_books_user(user))
+    return redirect(url_for('logged_in'))
+
+@app.route('/change_user',methods=['POST','GET'])
+def change_user():
+    if 'user' in session:
+        user=User_Login.query.filter(User_Login.username==session['user']).first()
+        if request.method == 'POST':
+            if not request.form['e-mail'] or not request.form['prev_pass'] or not request.form['new_pass'] or not request.form['rep_new_pass']:
+                flash('Please Fill In All The Fields')
+            elif request.form['e-mail'] != user.email:
+                flash('Please fill in the E-mail You Registered With')
+            elif request.form['prev_pass'] != user.password:
+                flash('User Password is Wrong')
+            elif request.form['new_pass'] != request.form['rep_new_pass']:
+                flash('Passwords don\'t Match')
+            else:
+                user.password=request.form['new_pass']
+                user.save()
+                flash('Password Changed Successfully')
+                return redirect(url_for('logged_in'))
+        return render_template('change-user.html')
+    return redirect(url_for('logged_in'))
 if __name__ == '__main__':
     app.run(debug=True)

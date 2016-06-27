@@ -1,0 +1,33 @@
+<!doctype html>
+<title>
+  Library Managment-Sign Up
+</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static",filename="css/style-change-user.css") }}">
+<body>
+  <div class="body" style="background-image: url({{ url_for("static",filename="img/main-bg.jpg") }}"></div>
+		<div class="grad"></div>
+		<div class="header">
+			<div>Change <span>Password</span></div>
+		</div>
+		<br>
+		<div class="user-change">
+      {% for message in get_flashed_messages()%}
+      {{ message }}
+      {% endfor %}
+      <form action="{{ url_for('change_user') }}" id="user-change" method="post">
+				<input type="text" placeholder="E-mail" name="e-mail"><br>
+        <input type="password" placeholder="Old Password" name="prev_pass"><br>
+        <input type="password" placeholder="New Password" name="new_pass"><br>
+        <input type="password" placeholder="Repeat Password" name="rep_new_pass">
+      </form>
+				<button type="submit" form="user-change" value="Submit">Change</button>
+        <a href="{{ url_for('logged_in') }}"><button type="button" value="Submit">Cancel</button></a>
+		</div>
+    <div class="footer">
+      <div class="name">
+        <div>Copyright &copy; <span>Jeevesh Narang</span></div>
+    </div>
+</body>
+<script src="{{ url_for("static",filename="js/prefixfree.min.js") }}"></script>
+<script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+</html>

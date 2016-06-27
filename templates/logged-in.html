@@ -24,8 +24,8 @@
       <br><br>
 				<button type="submit" form="search" value="Submit">Search</button>
         <a href="{{ url_for('all_books_users') }}"><button type="submit">Show All Books</button></a>
-        <button type="submit" value="Submit">Issued Books</button>
-        <a href="{{ url_for('add') }}"><button type="submit">ChangePassword</button></a>
+        <a href="{{ url_for('issued_books_user') }}"><button type="submit" value="Submit">Issued Books</button></a>
+        <a href="{{ url_for('change_user') }}"><button type="submit">ChangePassword</button></a>
         <a href="{{ url_for('user_logout') }}"><button type="submit">Log Out</button></a>
         <!--<a href=""><button type="submit">Delete DataBase</button></a>-->
 		</div>

@@ -7,7 +7,6 @@
         <link rel="stylesheet" href="{{ url_for("static",filename="css/issue-book.css") }}">
 <head>
   <body >
-    <div class="body" style="background-image: url('{{ url_for("static",filename="img/database.jpg") }}')"></div>
 <div class="table-title">
   <h3 style="font-family: 'Exo', sans-serif">Issue Book</h3>
   {% for message in get_flashed_messages() %}

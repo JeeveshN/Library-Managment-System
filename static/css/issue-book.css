@@ -11,6 +11,8 @@ body {
   text-rendering: optimizeLegibility;
   overflow-y: scroll;
   overflow-x: hidden;
+  background-image: url('/static/img/database.jpg');
+  background-size: cover;
 }
 .body{
 	position: absolute;
@@ -238,5 +240,5 @@ td.text-right {
 	padding: 4px;
 }
 #iss {
-  width: 85px;
+  width: 130px;
 }
